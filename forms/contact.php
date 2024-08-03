@@ -1,4 +1,11 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form fields and remove whitespace
     $name = strip_tags(trim($_POST["name"]));
@@ -16,8 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Set the recipient email address
-    // Update this to your desired email address
-    $recipient = "your_email@example.com";
+    $recipient = "mahesh@tarsamemittal.com";
 
     // Set the email subject
     $email_subject = "New contact from $name";
@@ -28,20 +34,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email_content .= "Occupation/Profession: $occupation\n";
     $email_content .= "Message:\n$message\n";
 
-    // Build the email headers
-    $email_headers = "From: $name <$email>";
+    // Create a new PHPMailer instance
+    $mail = new PHPMailer(true);
 
-    // Send the email
-    if (mail($recipient, $email_subject, $email_content, $email_headers)) {
-        // Set a 200 (okay) response code
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Your SMTP server
+        $mail->SMTPAuth = true;
+        $mail->Username = 'mahesh@tarsamemittal.com'; // Your SMTP username
+        $mail->Password = 'tmtalentmanagement'; // Your SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587; // TCP port to connect to
+
+        // Recipients
+        $mail->setFrom($email, $name);
+        $mail->addAddress($recipient);
+
+        // Content
+        $mail->isHTML(false);
+        $mail->Subject = $email_subject;
+        $mail->Body    = $email_content;
+
+        // Send the email
+        $mail->send();
         http_response_code(200);
         echo "Thank you! Your message has been sent.";
-    } else {
+    } catch (Exception $e) {
         // Set a 500 (internal server error) response code
         http_response_code(500);
         echo "Oops! Something went wrong, and we couldn't send your message.";
     }
-
 } else {
     // Not a POST request, set a 403 (forbidden) response code
     http_response_code(403);
