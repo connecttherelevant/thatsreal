@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Username = 'mahesh@tarsamemittal.com'; // Your SMTP username
         $mail->Password = 'tmtalentmanagement'; // Your SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587; // TCP port to connect to
+        $mail->Port = 465; // TCP port to connect to
 
         // Recipients
         $mail->setFrom($email, $name);
